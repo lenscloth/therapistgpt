@@ -18,7 +18,7 @@ export default function InputControl({
     event.preventDefault();
     getResponse();
   };
-
+  // loadingResponse = false;
   return (
     <form onSubmit={handleSubmit} className="flex space-x-4">
       <div className="grow">
@@ -33,9 +33,10 @@ export default function InputControl({
       <button
         type="submit"
         disabled={!prompt || loadingResponse}
-        className={`btn btn-ghost ${loadingResponse && "loading"}`}
+        className={`btn btn-ghost ${loadingResponse && "spinning"}`}
       >
         {!loadingResponse && <UpRightSVG />}
+        {loadingResponse && <span className="loader"></span>}
       </button>
     </form>
   );

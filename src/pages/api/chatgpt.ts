@@ -1,6 +1,10 @@
-import { openai } from "@/utils/chatgpt";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,14 +12,16 @@ export default async function handler(
 ) {
   const chatHistory = req.body;
 
-  const completion = await openai.createChatCompletion({
+  console.log(chatHistory);
+  console.log(process.env['OPENAI_API_KEY']);
+  const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: chatHistory,
-    temperature: 1,
-    max_tokens: 200,
+    stream: false,
   });
 
-  const chatGptResponse = completion.data.choices[0].message?.content;
+  console.log(completion);
+  const chatGptResponse = completion.choices[0].message?.content;
 
   res.status(200).json({ chatGptResponse });
 }

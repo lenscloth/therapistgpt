@@ -9,11 +9,13 @@ import {
 import Banner from "./Banner";
 import WarningAlert from "./WarningAlert";
 import ErrorAlert from "./ErrorAlert";
+import { SYSTEM_ENTRYPOINTS } from "next/dist/shared/lib/constants";
+
 
 const systemPrompt: ChatCompletionRequestMessage = {
   role: "system",
-  content:
-    "You are a friendly female therapist named Casey. Your knowledge is limited to therapy. You are not able to comment on anything else. Your mission is to improve the mental well-being of anyone that talks to you.",
+  content: "모든 응답은 숫자 넘버링 없이 대답해줘"
+  // "You are a friendly female therapist named Casey. Your knowledge is limited to therapy. You are not able to comment on anything else. Your mission is to improve the mental well-being of anyone that talks to you.",
 };
 
 export default function App() {
@@ -24,13 +26,15 @@ export default function App() {
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [showWarning, setShowWarning] = useState(true);
   const [showError, setShowError] = useState(false);
+  const [lastResponseLength, setLastResponseLength] = useState(0);
   const [chatHistory, setChatHistory] = useState<
     ChatCompletionRequestMessage[]
   >([systemPrompt]);
 
+  console.log(systemPrompt);
   const handleResponse = useCallback(async () => {
     try {
-      setLoadingResponse(true);
+      // setLoadingResponse(true);
 
       const response = await fetch("/api/chatgpt", {
         method: "POST",
@@ -46,7 +50,7 @@ export default function App() {
 
       setResponseAdded(true);
       setPromptAdded(false);
-      setLoadingResponse(false);
+      // setLoadingResponse(true);
       setShowError(false);
     } catch (error) {
       setShowError(true);
@@ -66,9 +70,7 @@ export default function App() {
         role: "assistant",
         content: response,
       };
-
       setChatHistory((chatHistory) => [...chatHistory, newResponse]);
-
       setResponseAdded(false);
     }
   }, [response, responseAdded]);
@@ -87,7 +89,7 @@ export default function App() {
     <main className="flex min-h-screen flex-col px-4 sm:px-24 gap-y-4 pb-4">
       <Banner />
       <div className="grow overflow-y-auto">
-        <ChatContainer chatHistory={chatHistory} />
+        <ChatContainer chatHistory={chatHistory} setLoadingResponse={setLoadingResponse} />
       </div>
       {showError && <ErrorAlert setShowError={setShowError} />}
       <InputControl
